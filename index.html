@@ -99,41 +99,37 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--accent);
         }
-    </style>
-  <script type="module" crossorigin src="/artifactreconstruct-ai/assets/index-DzijH_Iw.js"></script>
-  <link rel="stylesheet" crossorigin href="/artifactreconstruct-ai/assets/index-CjKOIJga.css">
-</head>
-
-<body>
-    <div id="root"></div>
+    </style>
     <script>
-        // Polyfill for process
+        // Global Error Handler & Polyfills
         window.process = { env: { NODE_ENV: 'production' } };
 
         window.onerror = function (message, source, lineno, colno, error) {
             const root = document.getElementById('root');
-            root.innerHTML = `
-                <div style="color: red; padding: 20px; font-family: monospace; background: #1a1a1a; min-height: 100vh;">
-                    <h1>Application Error</h1>
-                    <p><strong>Message:</strong> ${message}</p>
-                    <p><strong>Source:</strong> ${source}:${lineno}:${colno}</p>
-                    <p><strong>Stack:</strong> <pre>${error ? error.stack : 'No stack trace'}</pre></p>
-                </div>
-            `;
-            console.error(error);
+            if (root) {
+                root.innerHTML = `
+                    <div style="color: #ff5555; padding: 20px; font-family: monospace; background: #000; min-height: 100vh; white-space: pre-wrap;">
+                        <h1>Global Error</h1>
+                        <p><strong>Msg:</strong> ${message}</p>
+                        <p><strong>Loc:</strong> ${source}:${lineno}:${colno}</p>
+                        <p><strong>Stack:</strong> ${error ? error.stack : 'N/A'}</p>
+                    </div>
+                `;
+            }
+            console.error(message, error);
         };
+    </script>
+  <script type="module" crossorigin src="./assets/index-DzijH_Iw.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CjKOIJga.css">
+</head>
 
-        window.onunhandledrejection = function (event) {
-            const root = document.getElementById('root');
-            root.innerHTML = `
-                <div style="color: orange; padding: 20px; font-family: monospace; background: #1a1a1a; min-height: 100vh;">
-                    <h1>Unhandled Promise Rejection</h1>
-                    <p><strong>Reason:</strong> ${event.reason}</p>
-                </div>
-            `;
-            console.error(event.reason);
-        };
-    </script>
+<body>
+    <div id="root">
+        <div
+            style="color: #666; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh;">
+            Loading Artifact Reconstruct AI...
+        </div>
+    </div>
 </body>
 
 </html>
