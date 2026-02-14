@@ -1,6 +1,6 @@
-
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,12 +8,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap');
-        
+
         :root {
             --accent: #d4af37;
             --bg: #050505;
         }
-        
+
         body {
             font-family: 'Plus Jakarta Sans', sans-serif;
             background-color: var(--bg);
@@ -21,24 +21,24 @@
             overflow-x: hidden;
             letter-spacing: -0.01em;
         }
-        
+
         .font-serif {
             font-family: 'Playfair Display', serif;
         }
-        
+
         .cyber-grid {
-            background-image: 
+            background-image:
                 radial-gradient(circle at 2px 2px, rgba(212, 175, 55, 0.05) 1px, transparent 0);
             background-size: 40px 40px;
         }
-        
+
         .glass-card {
             background: rgba(12, 12, 14, 0.8);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.05);
             box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
         }
-        
+
         .scan-line {
             width: 100%;
             height: 2px;
@@ -50,38 +50,90 @@
             z-index: 20;
             pointer-events: none;
         }
-        
+
         @keyframes scan {
-            0% { top: 0%; opacity: 0; }
-            10% { opacity: 1; }
-            90% { opacity: 1; }
-            100% { top: 100%; opacity: 0; }
+            0% {
+                top: 0%;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
         }
-        
+
         .glow-text {
             text-shadow: 0 0 30px rgba(212, 175, 55, 0.2);
         }
-        
+
         .gold-gradient {
             background: linear-gradient(135deg, #d4af37 0%, #f9e29a 50%, #b8860b 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-        
+
         /* Custom Scrollbar */
-        
-        ::-webkit-scrollbar { width: 4px; }
-        
-        ::-webkit-scrollbar-track { background: var(--bg); }
-        
-        ::-webkit-scrollbar-thumb { background: #1a1a1a; border-radius: 2px; }
-        
-        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--bg);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #1a1a1a;
+            border-radius: 2px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent);
+        }
     </style>
-  <script type="module" crossorigin src="/artifactreconstruct-ai/assets/index-B5qV5sGU.js"></script>
-  <link rel="stylesheet" crossorigin href="/artifactreconstruct-ai/assets/index-BFpAp6FJ.css">
+  <script type="module" crossorigin src="/artifactreconstruct-ai/assets/index-DzijH_Iw.js"></script>
+  <link rel="stylesheet" crossorigin href="/artifactreconstruct-ai/assets/index-CjKOIJga.css">
 </head>
+
 <body>
-    <div id="root"></div>
+    <div id="root"></div>
+    <script>
+        // Polyfill for process
+        window.process = { env: { NODE_ENV: 'production' } };
+
+        window.onerror = function (message, source, lineno, colno, error) {
+            const root = document.getElementById('root');
+            root.innerHTML = `
+                <div style="color: red; padding: 20px; font-family: monospace; background: #1a1a1a; min-height: 100vh;">
+                    <h1>Application Error</h1>
+                    <p><strong>Message:</strong> ${message}</p>
+                    <p><strong>Source:</strong> ${source}:${lineno}:${colno}</p>
+                    <p><strong>Stack:</strong> <pre>${error ? error.stack : 'No stack trace'}</pre></p>
+                </div>
+            `;
+            console.error(error);
+        };
+
+        window.onunhandledrejection = function (event) {
+            const root = document.getElementById('root');
+            root.innerHTML = `
+                <div style="color: orange; padding: 20px; font-family: monospace; background: #1a1a1a; min-height: 100vh;">
+                    <h1>Unhandled Promise Rejection</h1>
+                    <p><strong>Reason:</strong> ${event.reason}</p>
+                </div>
+            `;
+            console.error(event.reason);
+        };
+    </script>
 </body>
+
 </html>
