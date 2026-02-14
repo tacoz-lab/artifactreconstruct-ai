@@ -99,6 +99,12 @@
         ::-webkit-scrollbar-thumb:hover {
             background: var(--accent);
         }
+    </style>
+    <style>
+        body {
+            background-color: #ffff00 !important;
+            color: #ff0000 !important;
+        }
     </style>
     <script>
         // Global Error Handler & Polyfills
@@ -119,17 +125,20 @@
             console.error(message, error);
         };
     </script>
-  <script type="module" crossorigin src="./assets/index-DzijH_Iw.js"></script>
-  <link rel="stylesheet" crossorigin href="./assets/index-CjKOIJga.css">
+  <script type="module" crossorigin src="/artifactreconstruct-ai/assets/index-DzijH_Iw.js"></script>
+  <link rel="stylesheet" crossorigin href="/artifactreconstruct-ai/assets/index-CjKOIJga.css">
 </head>
 
 <body>
-    <div id="root">
-        <div
-            style="color: #666; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh;">
-            Loading Artifact Reconstruct AI...
-        </div>
-    </div>
+    <div id="root" style="border: 5px solid red; padding: 20px; font-size: 24px; font-weight: bold;">
+        DEBUG MODE: VERSION 1.5 - TIMESTAMP ${new Date().toISOString()}
+        <br>
+        If you see this, HTML is loading.
+    </div>
+    <script>
+        console.log("HTML Init");
+        window.onerror = (msg) => document.body.insertAdjacentHTML('beforeend', `<div style="font-size:30px">JS ERROR: ${msg}</div>`);
+    </script>
 </body>
 
 </html>
