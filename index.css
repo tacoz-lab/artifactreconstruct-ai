@@ -1,0 +1,5 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Additional styles from index.html that might be better here, but keeping them in index.html for now is fine too. */
