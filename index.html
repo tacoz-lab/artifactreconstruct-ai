@@ -101,9 +101,12 @@
         }
     </style>
     <style>
+        /* Global Reset & Base */
         body {
-            background-color: #ffff00 !important;
-            color: #ff0000 !important;
+            background-color: #050505;
+            color: #f8f9fa;
+            margin: 0;
+            padding: 0;
         }
     </style>
     <script>
@@ -130,15 +133,7 @@
 </head>
 
 <body>
-    <div id="root" style="border: 5px solid red; padding: 20px; font-size: 24px; font-weight: bold;">
-        DEBUG MODE: VERSION 1.5 - TIMESTAMP ${new Date().toISOString()}
-        <br>
-        If you see this, HTML is loading.
-    </div>
-    <script>
-        console.log("HTML Init");
-        window.onerror = (msg) => document.body.insertAdjacentHTML('beforeend', `<div style="font-size:30px">JS ERROR: ${msg}</div>`);
-    </script>
+    <div id="root"></div>
 </body>
 
 </html>
