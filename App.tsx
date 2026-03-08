@@ -60,24 +60,29 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [passwordInput, setPasswordInput] = useState('');
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
+  const passcode = "FLLQUANTUM2026";
+
   useEffect(() => {
-    const checkKey = async () => {
-      if (window.aistudio) {
-        const selected = await window.aistudio.hasSelectedApiKey();
-        setHasKey(selected);
-      }
-    };
-    checkKey();
+    const saved = localStorage.getItem('artifact_auth');
+    if (saved === passcode) {
+      setHasKey(true);
+    } else {
+      setHasKey(false);
+    }
   }, []);
 
   const handleOpenKeySelector = async () => {
-    if (window.aistudio) {
-      await window.aistudio.openSelectKey();
+    if (passwordInput === passcode) {
+      localStorage.setItem('artifact_auth', passcode);
       setHasKey(true);
+      setError(null);
+    } else {
+      setError("ACCESS DENIED. Invalid passcode.");
     }
   };
 
@@ -257,13 +262,24 @@ const App: React.FC = () => {
       <main className="max-w-[1400px] mx-auto px-8 pt-32 pb-20">
         {!hasKey && (
           <div className="max-w-xl mx-auto py-20 text-center glass-card p-12 rounded-[3rem] border-[#d4af37]/20 animate-in fade-in slide-in-from-bottom-4">
-            <h2 className="text-4xl font-serif italic mb-6">Security Protocol</h2>
-            <p className="text-stone-400 mb-10 text-lg leading-relaxed">Advanced digital reassembly requires specialized compute cycles. Authenticate with a paid Google AI Studio project key to proceed.</p>
+            <h2 className="text-4xl font-serif italic mb-6">Classified Access</h2>
+            <p className="text-stone-400 mb-8 text-lg leading-relaxed">System locked. Please enter your authorization passcode to access the neural forensic capabilities.</p>
+            <div className="flex flex-col gap-4 max-w-sm mx-auto mb-8">
+              <input
+                type="password"
+                value={passwordInput}
+                onChange={(e) => setPasswordInput(e.target.value)}
+                placeholder="Enter Passcode..."
+                className="w-full bg-black/50 border border-white/10 rounded-full px-6 py-4 text-center text-white focus:outline-none focus:border-[#d4af37] tracking-widest transition-colors font-mono"
+                onKeyDown={(e) => e.key === 'Enter' && handleOpenKeySelector()}
+              />
+              {error && <p className="text-red-500 text-xs font-bold uppercase tracking-widest bg-red-500/10 py-2 rounded-full border border-red-500/20">{error}</p>}
+            </div>
             <button
               onClick={handleOpenKeySelector}
               className="bg-[#d4af37] text-[#050505] px-12 py-4 rounded-full font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-[#d4af37]/30"
             >
-              Set API Credentials
+              Verify Access
             </button>
           </div>
         )}
