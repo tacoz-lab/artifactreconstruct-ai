@@ -3,9 +3,9 @@ import { ArtifactAnalysis, GroundingSource } from "../types";
 
 const getApiKey = () => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem('gemini_api_key') || process.env.API_KEY || '';
+    return localStorage.getItem('gemini_api_key') || '';
   }
-  return process.env.API_KEY || '';
+  return '';
 };
 
 const MAX_RETRIES = 2;

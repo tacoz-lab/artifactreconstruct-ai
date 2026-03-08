@@ -70,8 +70,6 @@ const App: React.FC = () => {
       const savedKey = localStorage.getItem('gemini_api_key');
       if (savedKey) {
         setHasKey(true);
-      } else if (process.env.API_KEY && process.env.API_KEY !== '') {
-        setHasKey(true);
       } else {
         setHasKey(false);
       }
@@ -142,9 +140,10 @@ const App: React.FC = () => {
       } catch (err: any) {
         console.error(err);
         const msg = (err.message || '').toLowerCase();
-        if (msg.includes('permission') || msg.includes('403') || msg.includes('not found')) {
-          setError("API Access Refused. Please select a valid paid key.");
+        if (msg.includes('permission') || msg.includes('403') || msg.includes('not found') || msg.includes('api key') || msg.includes('400')) {
+          setError("API Access Refused or Expired. Please provide a valid key.");
           setHasKey(false);
+          localStorage.removeItem('gemini_api_key');
         } else if (msg.includes('500') || msg.includes('internal')) {
           setError("The AI model encountered a temporary hiccup. Please try again.");
         } else {
