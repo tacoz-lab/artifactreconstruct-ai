@@ -38,6 +38,8 @@ This repo includes workflow `.github/workflows/deploy-pages.yml`.
 3. Push to `main`.
 4. Workflow builds `dist` and deploys to Pages.
 
+The workflow now fails early with a clear error if `VITE_API_BASE_URL` is missing or not an `http(s)` URL.
+
 ## Backend Deployment (Required For Production API Calls)
 
 GitHub Pages is static-only, so `/api/*` routes cannot run on Pages directly.
