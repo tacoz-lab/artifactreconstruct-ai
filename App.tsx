@@ -1,19 +1,9 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef } from 'react';
 import { analyzeArtifact, generateImage, generateSpeech } from './services/geminiService';
 import { AppStatus, ReconstructionData } from './types';
 import ComparisonSlider from './components/ComparisonSlider';
 import HotspotLayer from './components/HotspotLayer';
-
-declare global {
-  interface AIStudio {
-    hasSelectedApiKey: () => Promise<boolean>;
-    openSelectKey: () => Promise<void>;
-  }
-  interface Window {
-    aistudio?: AIStudio;
-  }
-}
 
 const LogoIcon = () => (
   <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -38,7 +28,6 @@ const App: React.FC = () => {
      EXISTING STATE
   ------------------------------------------------------------- */
   const [status, setStatus] = useState<AppStatus>('complete');
-  const [hasKey, setHasKey] = useState<boolean>(true);
   const [data, setData] = useState<ReconstructionData>({
     analysis: {
       identification: { civilization: 'Debug', type: 'Test', era: 'Now', region: 'Local', material: 'Bits', exactYearRange: '2024' },
@@ -60,32 +49,9 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const [apiKeyInput, setApiKeyInput] = useState('');
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
-
-  useEffect(() => {
-    const checkKey = () => {
-      const savedKey = localStorage.getItem('gemini_api_key');
-      if (savedKey) {
-        setHasKey(true);
-      } else {
-        setHasKey(false);
-      }
-    };
-    checkKey();
-  }, []);
-
-  const handleSaveKey = () => {
-    if (apiKeyInput.trim().length > 0) {
-      localStorage.setItem('gemini_api_key', apiKeyInput.trim());
-      setHasKey(true);
-      setError(null);
-    } else {
-      setError("Please enter a valid API key.");
-    }
-  };
 
   const decodeBase64 = (base64: string) => {
     const binaryString = atob(base64);
@@ -106,11 +72,6 @@ const App: React.FC = () => {
   };
 
   const processFile = async (file: File) => {
-    if (!hasKey) {
-      setHasKey(false);
-      return;
-    }
-
     setStatus('analyzing');
     setError(null);
 
@@ -140,10 +101,8 @@ const App: React.FC = () => {
       } catch (err: any) {
         console.error(err);
         const msg = (err.message || '').toLowerCase();
-        if (msg.includes('permission') || msg.includes('403') || msg.includes('not found') || msg.includes('api key') || msg.includes('400')) {
-          setError("API Access Refused or Expired. Please provide a valid key.");
-          setHasKey(false);
-          localStorage.removeItem('gemini_api_key');
+        if (msg.includes('permission') || msg.includes('403') || msg.includes('not found')) {
+          setError('API access refused. Check your backend GEMINI_API_KEY and billing settings.');
         } else if (msg.includes('500') || msg.includes('internal')) {
           setError("The AI model encountered a temporary hiccup. Please try again.");
         } else {
@@ -262,31 +221,7 @@ const App: React.FC = () => {
 
       {/* Main Area */}
       <main className="max-w-[1400px] mx-auto px-8 pt-32 pb-20">
-        {!hasKey && (
-          <div className="max-w-xl mx-auto py-20 text-center glass-card p-12 rounded-[3rem] border-[#d4af37]/20 animate-in fade-in slide-in-from-bottom-4">
-            <h2 className="text-4xl font-serif italic mb-6">Security Protocol</h2>
-            <p className="text-stone-400 mb-8 text-lg leading-relaxed">Advanced digital reassembly requires specialized compute cycles. Authenticate with a Google AI Studio project key to proceed.</p>
-            <div className="flex flex-col gap-4 max-w-sm mx-auto mb-8">
-              <input
-                type="password"
-                value={apiKeyInput}
-                onChange={(e) => setApiKeyInput(e.target.value)}
-                placeholder="Enter Gemini API Key..."
-                className="w-full bg-black/50 border border-white/10 rounded-full px-6 py-4 text-center text-white focus:outline-none focus:border-[#d4af37] tracking-widest transition-colors font-mono"
-                onKeyDown={(e) => e.key === 'Enter' && handleSaveKey()}
-              />
-              {error && <p className="text-red-500 text-xs font-bold uppercase tracking-widest bg-red-500/10 py-2 rounded-full border border-red-500/20">{error}</p>}
-            </div>
-            <button
-              onClick={handleSaveKey}
-              className="bg-[#d4af37] text-[#050505] px-12 py-4 rounded-full font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-[#d4af37]/30"
-            >
-              Set API Credentials
-            </button>
-          </div>
-        )}
-
-        {status === 'idle' && hasKey && (
+        {status === 'idle' && (
           <div className="max-w-4xl mx-auto py-20 text-center animate-in fade-in duration-1000">
             <h1 className="text-7xl md:text-9xl font-serif italic mb-8 leading-tight">
               Archeology, <br /> <span className="gold-gradient not-italic font-sans tracking-tighter uppercase text-6xl md:text-8xl">Digitized.</span>
