@@ -60,24 +60,30 @@ const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [apiKeyInput, setApiKeyInput] = useState('');
 
   const audioContextRef = useRef<AudioContext | null>(null);
   const audioSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
   useEffect(() => {
-    const checkKey = async () => {
-      if (window.aistudio) {
-        const selected = await window.aistudio.hasSelectedApiKey();
-        setHasKey(selected);
+    const checkKey = () => {
+      const savedKey = localStorage.getItem('gemini_api_key');
+      if (savedKey) {
+        setHasKey(true);
+      } else {
+        setHasKey(false);
       }
     };
     checkKey();
   }, []);
 
-  const handleOpenKeySelector = async () => {
-    if (window.aistudio) {
-      await window.aistudio.openSelectKey();
+  const handleSaveKey = () => {
+    if (apiKeyInput.trim().length > 0) {
+      localStorage.setItem('gemini_api_key', apiKeyInput.trim());
       setHasKey(true);
+      setError(null);
+    } else {
+      setError("Please enter a valid API key.");
     }
   };
 
@@ -101,7 +107,7 @@ const App: React.FC = () => {
 
   const processFile = async (file: File) => {
     if (!hasKey) {
-      await handleOpenKeySelector();
+      setHasKey(false);
       return;
     }
 
@@ -134,9 +140,10 @@ const App: React.FC = () => {
       } catch (err: any) {
         console.error(err);
         const msg = (err.message || '').toLowerCase();
-        if (msg.includes('permission') || msg.includes('403') || msg.includes('not found')) {
-          setError("API Access Refused. Please select a valid paid key.");
+        if (msg.includes('permission') || msg.includes('403') || msg.includes('not found') || msg.includes('api key') || msg.includes('400')) {
+          setError("API Access Refused or Expired. Please provide a valid key.");
           setHasKey(false);
+          localStorage.removeItem('gemini_api_key');
         } else if (msg.includes('500') || msg.includes('internal')) {
           setError("The AI model encountered a temporary hiccup. Please try again.");
         } else {
@@ -258,9 +265,20 @@ const App: React.FC = () => {
         {!hasKey && (
           <div className="max-w-xl mx-auto py-20 text-center glass-card p-12 rounded-[3rem] border-[#d4af37]/20 animate-in fade-in slide-in-from-bottom-4">
             <h2 className="text-4xl font-serif italic mb-6">Security Protocol</h2>
-            <p className="text-stone-400 mb-10 text-lg leading-relaxed">Advanced digital reassembly requires specialized compute cycles. Authenticate with a paid Google AI Studio project key to proceed.</p>
+            <p className="text-stone-400 mb-8 text-lg leading-relaxed">Advanced digital reassembly requires specialized compute cycles. Authenticate with a Google AI Studio project key to proceed.</p>
+            <div className="flex flex-col gap-4 max-w-sm mx-auto mb-8">
+              <input
+                type="password"
+                value={apiKeyInput}
+                onChange={(e) => setApiKeyInput(e.target.value)}
+                placeholder="Enter Gemini API Key..."
+                className="w-full bg-black/50 border border-white/10 rounded-full px-6 py-4 text-center text-white focus:outline-none focus:border-[#d4af37] tracking-widest transition-colors font-mono"
+                onKeyDown={(e) => e.key === 'Enter' && handleSaveKey()}
+              />
+              {error && <p className="text-red-500 text-xs font-bold uppercase tracking-widest bg-red-500/10 py-2 rounded-full border border-red-500/20">{error}</p>}
+            </div>
             <button
-              onClick={handleOpenKeySelector}
+              onClick={handleSaveKey}
               className="bg-[#d4af37] text-[#050505] px-12 py-4 rounded-full font-bold uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-[#d4af37]/30"
             >
               Set API Credentials

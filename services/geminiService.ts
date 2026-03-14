@@ -1,6 +1,12 @@
-
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 import { ArtifactAnalysis, GroundingSource } from "../types";
+
+const getApiKey = () => {
+  if (typeof window !== 'undefined') {
+    return localStorage.getItem('gemini_api_key') || '';
+  }
+  return '';
+};
 
 const MAX_RETRIES = 2;
 const INITIAL_BACKOFF = 1000;
@@ -19,7 +25,7 @@ async function withRetry<T>(fn: () => Promise<T>, retries = MAX_RETRIES, delay =
 }
 
 export const analyzeArtifact = async (base64Image: string, context: string = ''): Promise<ArtifactAnalysis> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
   return withRetry(async () => {
     const response = await ai.models.generateContent({
@@ -177,7 +183,7 @@ Required JSON Output:
 };
 
 export const generateImage = async (prompt: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
   return withRetry(async () => {
     const response = await ai.models.generateContent({
@@ -201,7 +207,7 @@ export const generateImage = async (prompt: string): Promise<string> => {
 };
 
 export const generateSpeech = async (text: string): Promise<string> => {
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+  const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
   return withRetry(async () => {
     const response = await ai.models.generateContent({
