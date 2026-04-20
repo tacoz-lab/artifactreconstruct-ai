@@ -18,13 +18,6 @@ const LogoIcon = () => (
 
 const App: React.FC = () => {
   /* -------------------------------------------------------------
-     NEW STATE & REFS
-  ------------------------------------------------------------- */
-  const [artifactMode, setArtifactMode] = useState<'old' | 'new'>('old');
-  const [showWarningModal, setShowWarningModal] = useState(false);
-  const [pendingFile, setPendingFile] = useState<File | null>(null);
-
-  /* -------------------------------------------------------------
      EXISTING STATE
   ------------------------------------------------------------- */
   const [status, setStatus] = useState<AppStatus>('complete');
@@ -121,29 +114,12 @@ const App: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (artifactMode === 'new') {
-      setPendingFile(file);
-      setShowWarningModal(true);
-    } else {
-      processFile(file);
-    }
+    processFile(file);
 
     // Reset value so onChange triggers again if same file selected
     event.target.value = '';
   };
 
-  const confirmUpload = () => {
-    if (pendingFile) {
-      processFile(pendingFile);
-    }
-    setPendingFile(null);
-    setShowWarningModal(false);
-  };
-
-  const cancelUpload = () => {
-    setPendingFile(null);
-    setShowWarningModal(false);
-  };
 
   const retryScan = () => {
     if (fileInputRef.current) {
@@ -230,31 +206,6 @@ const App: React.FC = () => {
               Upload any fragment. Our AI performs a neutral forensic search to ground its origin and <span className="text-white font-medium italic underline decoration-[#d4af37]">reassembles it volumetrically</span>.
             </p>
 
-            {/* Mode Switch */}
-            <div className="flex justify-center mb-8">
-              <div className="bg-white/5 rounded-full p-1 border border-white/10 flex items-center">
-                <button
-                  type="button"
-                  onClick={() => setArtifactMode('old')}
-                  className={`px-8 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${artifactMode === 'old'
-                    ? 'bg-[#d4af37] text-black shadow-lg shadow-[#d4af37]/20'
-                    : 'text-stone-500 hover:text-white'
-                    }`}
-                >
-                  Old
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setArtifactMode('new')}
-                  className={`px-8 py-2 rounded-full text-xs font-bold uppercase tracking-widest transition-all ${artifactMode === 'new'
-                    ? 'bg-[#d4af37] text-black shadow-lg shadow-[#d4af37]/20'
-                    : 'text-stone-500 hover:text-white'
-                    }`}
-                >
-                  New
-                </button>
-              </div>
-            </div>
 
             <div className="max-w-xl mx-auto mb-12 relative group z-10">
               <textarea
@@ -447,35 +398,6 @@ const App: React.FC = () => {
       </main>
 
       {/* Warning Modal */}
-      {showWarningModal && (
-        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 animate-in fade-in duration-300">
-          <div className="bg-[#0a0a0a] border border-[#d4af37]/20 rounded-[2rem] p-8 max-w-md w-full shadow-2xl scale-100 animate-in zoom-in-95 duration-300">
-            <div className="text-center mb-6">
-              <div className="w-16 h-16 bg-[#d4af37]/10 rounded-full flex items-center justify-center mx-auto mb-4 text-[#d4af37]">
-                <i className="fas fa-exclamation-triangle text-2xl"></i>
-              </div>
-              <h3 className="text-2xl font-serif italic mb-2">Experimental Feature</h3>
-              <p className="text-stone-400 text-sm leading-relaxed">
-                You have selected "New" artifact mode. Results generated in this mode may not be fully historically accurate.
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <button
-                onClick={cancelUpload}
-                className="flex-1 py-3 rounded-full border border-white/10 text-stone-400 font-bold text-xs uppercase tracking-widest hover:bg-white/5 hover:text-white transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                onClick={confirmUpload}
-                className="flex-1 py-3 rounded-full bg-[#d4af37] text-black font-bold text-xs uppercase tracking-widest hover:bg-[#b09130] transition-colors"
-              >
-                Continue
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Audio Engine UI */}
       {isPlaying && (
